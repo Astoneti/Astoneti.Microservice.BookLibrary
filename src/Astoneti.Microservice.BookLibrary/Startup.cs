@@ -1,5 +1,7 @@
 using Astoneti.Microservice.BookLibrary.Business;
 using Astoneti.Microservice.BookLibrary.Business.Contracts;
+using Astoneti.Microservice.BookLibrary.Mappings;
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -20,6 +22,13 @@ namespace Astoneti.Microservice.BookLibrary
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var mapperConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new BookProfile());
+            });
+
+            IMapper mapper = mapperConfig.CreateMapper();
+            services.AddSingleton(mapper);
             services.AddTransient<IBookService, BookService>();
             services.AddControllers();
             services.AddSwaggerGen(c =>
