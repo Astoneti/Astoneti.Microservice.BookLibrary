@@ -1,4 +1,4 @@
-﻿namespace Astoneti.Microservice.BookLibrary
+﻿namespace Astoneti.Microservice.BookLibrary.Models
 {
     public class BookModel
     {

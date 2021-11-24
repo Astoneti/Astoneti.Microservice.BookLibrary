@@ -1,3 +1,5 @@
+using Astoneti.Microservice.BookLibrary.Business;
+using Astoneti.Microservice.BookLibrary.Business.Contracts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -18,7 +20,7 @@ namespace Astoneti.Microservice.BookLibrary
 
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.AddTransient<IBookService, BookService>();
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {

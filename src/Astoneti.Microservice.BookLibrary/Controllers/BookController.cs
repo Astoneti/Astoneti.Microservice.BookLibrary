@@ -1,22 +1,30 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Astoneti.Microservice.BookLibrary.Business.Contracts;
+using Astoneti.Microservice.BookLibrary.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 
 namespace Astoneti.Microservice.BookLibrary.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("books")]
     [ApiController]
     public class BookController : ControllerBase
     {
-        [HttpGet]
-        public IEnumerable<BookModel> GetBooks()
+        private IBookService _bookService;
+
+        public BookController(IBookService bookServise)
         {
-            var list = new List<BookModel>()
-            {
-                new BookModel(){ Id = 1, Title = "My First boob", Author = "Anton Pashkun" },
-                new BookModel(){ Id = 2, Title = "Code First", Author = "Anton Pashkun" },
-                new BookModel(){ Id = 3, Title = "How to become a developer from scratch", Author = "Anton Pashkun" }
-            };
-            return list;
+            _bookService = bookServise;
+        }
+
+        [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<BookModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public ActionResult<IEnumerable<BookModel>> GetList()
+        {
+            var list = _bookService.GetList();
+
+            return Ok(list);
         }
     }
 }
