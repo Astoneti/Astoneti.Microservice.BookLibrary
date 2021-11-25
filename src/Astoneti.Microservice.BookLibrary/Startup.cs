@@ -1,9 +1,12 @@
 using Astoneti.Microservice.BookLibrary.Business;
 using Astoneti.Microservice.BookLibrary.Business.Contracts;
+using Astoneti.Microservice.BookLibrary.Data;
+using Astoneti.Microservice.BookLibrary.Data.Contracts;
 using Astoneti.Microservice.BookLibrary.Mappings;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -22,6 +25,9 @@ namespace Astoneti.Microservice.BookLibrary
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<BookLibraryContext>(options =>
+               options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
             var mapperConfig = new MapperConfiguration(mc =>
             {
                 mc.AddProfile(new BookProfile());
@@ -30,6 +36,7 @@ namespace Astoneti.Microservice.BookLibrary
             IMapper mapper = mapperConfig.CreateMapper();
             services.AddSingleton(mapper);
             services.AddTransient<IBookService, BookService>();
+            services.AddTransient<IBookRepository, BookRepository>();
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {

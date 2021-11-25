@@ -12,7 +12,7 @@ namespace Astoneti.Microservice.BookLibrary.Controllers
     [ApiController]
     public class BookController : ControllerBase
     {
-        private IBookService _bookService;
+        private readonly IBookService _bookService;
         private readonly IMapper _mapper;
 
         public BookController(IBookService bookServise, IMapper mapper)
