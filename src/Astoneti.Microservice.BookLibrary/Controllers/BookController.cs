@@ -27,8 +27,9 @@ namespace Astoneti.Microservice.BookLibrary.Controllers
         public ActionResult<List<BookModel>> Get()
         {
             var list = _bookService.GetList();
-
-            return Ok(_mapper.Map<List<BookModel>, List<BookDto>>(list));
+            var bookModel = _mapper.Map<List<BookDto>, List<BookModel>>(list);
+                   
+            return Ok(bookModel);
         }
     }
 }
