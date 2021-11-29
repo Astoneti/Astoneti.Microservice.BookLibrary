@@ -1,5 +1,4 @@
 ﻿using Astoneti.Microservice.BookLibrary.Business.Contracts;
-using Astoneti.Microservice.BookLibrary.Business.Dto;
 using Astoneti.Microservice.BookLibrary.Models;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
@@ -24,12 +23,13 @@ namespace Astoneti.Microservice.BookLibrary.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<BookModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<List<BookModel>> Get()
+        public IActionResult GetList()
         {
-            var list = _bookService.GetList();
-            var bookModel = _mapper.Map<List<BookDto>, List<BookModel>>(list);
-                   
-            return Ok(bookModel);
+            return Ok(
+                _mapper.Map<IList<BookModel>>(
+                    _bookService.GetList()
+                )
+            );
         }
     }
 }

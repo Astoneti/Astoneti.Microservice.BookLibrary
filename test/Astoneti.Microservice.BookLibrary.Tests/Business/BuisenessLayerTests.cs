@@ -10,8 +10,6 @@ namespace Astoneti.Microservice.BookLibrary.Tests
         [Fact]
         public void GetList_WhenParametersIsValid_Should_ReturnAspectedResult()
         {
-
-            // Arrange
             var expected = new List<BookDto>()
             {
                 new BookDto(){ Id = 1, Title = "My First book", Author = "Anton Pashkun" },
@@ -21,13 +19,9 @@ namespace Astoneti.Microservice.BookLibrary.Tests
 
             var undertest = new BookService();
 
-            // Act
-
             var result = undertest.GetList();
 
-            // Assert
             Assert.Equal(expected, result);
-
         }
     }
 }
