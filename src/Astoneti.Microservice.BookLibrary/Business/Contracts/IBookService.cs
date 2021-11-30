@@ -6,5 +6,6 @@ namespace Astoneti.Microservice.BookLibrary.Business.Contracts
     public interface IBookService
     {
         List<BookDto> GetList();
+        BookDto Get(int id);
     }
 }

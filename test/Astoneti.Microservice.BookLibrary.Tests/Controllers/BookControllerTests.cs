@@ -63,5 +63,51 @@ namespace Astoneti.Microservice.BookLibrary.Tests
 
             resultValue.Should().BeEquivalentTo(expectedResultValue);
         }
+
+        [Fact]
+        public void Get_WhenParametersIsValid_Should_ReturnExpectedResultById()
+        {
+            // Arrange
+            int testBookId = 1;
+
+            var dtos = new BookDto()
+            {
+                Id = 1,
+                Author = "Johny",
+                Title = "Test Book"
+            };
+
+            var expectedResultValue = _mapper.Map<BookModel>(dtos);
+
+            _bookService
+                .Setup(x => x.Get(testBookId))
+                .Returns(dtos);
+
+            // Act
+            var result = _controller.Get(testBookId);
+
+            // Assert
+            var okObjectResult = Assert.IsAssignableFrom<OkObjectResult>(result);
+            var resultValue = Assert.IsAssignableFrom<BookModel>(okObjectResult.Value);
+
+            resultValue.Should().BeEquivalentTo(expectedResultValue);
+        }
+
+        [Fact]
+        public void Get_ReturnsNotFoundResultWhenItemNotFound()
+        {
+            // Arrange
+            int testBookById = 5;
+
+            _bookService
+                .Setup(_ => _.Get(testBookById))
+                .Returns(null as BookDto);
+
+            // Act
+            var result = _controller.Get(testBookById);
+
+            // Assert
+            Assert.IsType<NotFoundResult>(result);
+        }
     }
 }

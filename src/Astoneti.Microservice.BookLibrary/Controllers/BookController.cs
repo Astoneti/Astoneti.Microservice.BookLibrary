@@ -31,5 +31,24 @@ namespace Astoneti.Microservice.BookLibrary.Controllers
                 )
             );
         }
+
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(BookModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public IActionResult Get(int id)
+        {
+            var item = _bookService.Get(id);
+
+            if (item == null)
+            {
+                return NotFound();
+            }
+               
+            return Ok(
+                _mapper.Map<BookModel>(
+                    item
+                )
+            );
+        }
     }
 }

@@ -18,5 +18,10 @@ namespace Astoneti.Microservice.BookLibrary.Data
         {
             return DbContext.Set<BookEntity>().ToList();
         }
+
+        public BookEntity Get(int id)
+        {
+            return DbContext.Set<BookEntity>().FirstOrDefault(_ => _.Id == id);
+        }
     }
 }
