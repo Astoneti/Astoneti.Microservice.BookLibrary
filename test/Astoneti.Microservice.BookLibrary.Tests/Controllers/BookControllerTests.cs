@@ -13,14 +13,14 @@ namespace Astoneti.Microservice.BookLibrary.Tests
 {
     public class BookControllerTests
     {
-        private readonly Mock<IBookService> _bookService;
+        private readonly Mock<IBookService> _mockBookService;
         private readonly IMapper _mapper;
 
         private readonly BookController _controller;
 
         public BookControllerTests()
         {
-            _bookService = new Mock<IBookService>(MockBehavior.Strict);
+            _mockBookService = new Mock<IBookService>(MockBehavior.Strict);
 
             _mapper = new MapperConfiguration(
                     cfg => cfg.AddMaps(
@@ -30,7 +30,7 @@ namespace Astoneti.Microservice.BookLibrary.Tests
                 .CreateMapper();
 
             _controller = new BookController(
-                _bookService.Object,
+                _mockBookService.Object,
                 _mapper
             );
         }
@@ -50,7 +50,7 @@ namespace Astoneti.Microservice.BookLibrary.Tests
 
             var expectedResultValue = _mapper.Map<IList<BookModel>>(dtos);
 
-            _bookService
+            _mockBookService
                 .Setup(x => x.GetList())
                 .Returns(dtos);
 
@@ -61,50 +61,54 @@ namespace Astoneti.Microservice.BookLibrary.Tests
             var okObjectResult = Assert.IsAssignableFrom<OkObjectResult>(result);
             var resultValue = Assert.IsAssignableFrom<IList<BookModel>>(okObjectResult.Value);
 
-            resultValue.Should().BeEquivalentTo(expectedResultValue);
+            resultValue
+                .Should()
+                .BeEquivalentTo(expectedResultValue);
         }
 
         [Fact]
-        public void Get_WhenParametersIsValid_Should_ReturnExpectedResultById()
+        public void Get_WhenItemExists_Should_ReturnItem()
         {
             // Arrange
-            int testBookId = 1;
+            const int id = 1;
 
-            var dtos = new BookDto()
+            var dto = new BookDto()
             {
-                Id = 1,
-                Author = "Johny",
-                Title = "Test Book"
+                Id = id,
+                Author = "John",
+                Title = "Test Tiitle"
             };
 
-            var expectedResultValue = _mapper.Map<BookModel>(dtos);
+            var expectedResultValue = _mapper.Map<BookModel>(dto);
 
-            _bookService
-                .Setup(x => x.Get(testBookId))
-                .Returns(dtos);
+            _mockBookService
+                .Setup(x => x.Get(id))
+                .Returns(dto);
 
             // Act
-            var result = _controller.Get(testBookId);
+            var result = _controller.Get(id);
 
             // Assert
             var okObjectResult = Assert.IsAssignableFrom<OkObjectResult>(result);
             var resultValue = Assert.IsAssignableFrom<BookModel>(okObjectResult.Value);
 
-            resultValue.Should().BeEquivalentTo(expectedResultValue);
+            resultValue
+                .Should()
+                .BeEquivalentTo(expectedResultValue);
         }
 
         [Fact]
-        public void Get_ReturnsNotFoundResultWhenItemNotFound()
+        public void Get_WhenItemNotExists_Should_ReturnNotFound()
         {
             // Arrange
-            int testBookById = 5;
+            const int id = 1;
 
-            _bookService
-                .Setup(_ => _.Get(testBookById))
-                .Returns(null as BookDto);
+            _mockBookService
+                .Setup(_ => _.Get(id))
+                .Returns(() => null);
 
             // Act
-            var result = _controller.Get(testBookById);
+            var result = _controller.Get(id);
 
             // Assert
             Assert.IsType<NotFoundResult>(result);

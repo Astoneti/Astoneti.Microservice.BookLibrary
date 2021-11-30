@@ -43,7 +43,7 @@ namespace Astoneti.Microservice.BookLibrary.Controllers
             {
                 return NotFound();
             }
-               
+
             return Ok(
                 _mapper.Map<BookModel>(
                     item
