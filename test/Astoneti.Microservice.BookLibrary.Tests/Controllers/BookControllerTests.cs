@@ -112,6 +112,37 @@ namespace Astoneti.Microservice.BookLibrary.Tests
 
             // Assert
             Assert.IsType<NotFoundResult>(result);
+            Assert.NotNull(result);
+        }
+
+        [Fact]
+        public void Create_Sould_CreateNewItemAndAddInToDb()
+        {
+            // Arrange
+            var dto = new BookDto()
+            {
+                Id = 1,
+                Author = "John",
+                Title = "Test Tiitle"
+            };
+
+            var expectedResultValue = 
+                _mapper.Map<BookModel>(dto);
+
+            _mockBookService
+                .Setup(x => x.Create(dto));
+                
+            // Act
+            var result = _controller.Create(dto);
+
+            // Assert
+            var okObjectResult = Assert.IsAssignableFrom<OkObjectResult>(result);
+            var resultValue = Assert.IsAssignableFrom<BookModel>(okObjectResult.Value);
+            Assert.NotNull(result);
+
+            resultValue
+                .Should()
+                .BeEquivalentTo(expectedResultValue);
         }
     }
 }

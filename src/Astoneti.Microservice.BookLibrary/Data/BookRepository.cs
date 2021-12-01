@@ -14,6 +14,7 @@ namespace Astoneti.Microservice.BookLibrary.Data
         {
             DbContext = dbContext;
         }
+
         public List<BookEntity> GetList()
         {
             return DbContext.Set<BookEntity>().ToList();
@@ -22,6 +23,12 @@ namespace Astoneti.Microservice.BookLibrary.Data
         public BookEntity Get(int id)
         {
             return DbContext.Set<BookEntity>().FirstOrDefault(_ => _.Id == id);
+        }
+
+        public void Create(BookEntity book)
+        {
+            DbContext.Set<BookEntity>().Add(book);
+            DbContext.SaveChanges();
         }
     }
 }

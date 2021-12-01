@@ -3,6 +3,7 @@ using Astoneti.Microservice.BookLibrary.Business.Dto;
 using Astoneti.Microservice.BookLibrary.Data.Contracts;
 using Astoneti.Microservice.BookLibrary.Data.Entities;
 using AutoMapper;
+using FluentAssertions;
 using Moq;
 using System.Collections.Generic;
 using Xunit;
@@ -18,7 +19,7 @@ namespace Astoneti.Microservice.BookLibrary.Tests
 
         public BookServiceTests()
         {
-            _mockBookRepository = new Mock<IBookRepository>(MockBehavior.Strict);
+            _mockBookRepository = new Mock<IBookRepository>();
 
             _mapper = new MapperConfiguration(
                     cfg => cfg.AddMaps(
@@ -60,7 +61,7 @@ namespace Astoneti.Microservice.BookLibrary.Tests
         }
 
         [Fact]
-        public void Get_book_details_success()
+        public void Get_Sould_ReturnItemById()
         {
             // Arrange
             const int id = 1;
@@ -88,6 +89,36 @@ namespace Astoneti.Microservice.BookLibrary.Tests
             Assert.Equal(expectedResultValue.Title, result.Title);
             Assert.Equal(expectedResultValue.Author, result.Author);
             Assert.Equal(1, 1);
+        }
+
+        [Fact]
+        public void Create_Sould_CreateNewItemAndAddInDb()
+        {
+            // Arrange
+            var book = new BookDto
+            {
+                Id = 111
+            };
+            var item = _mapper.Map<BookEntity>(book);
+
+            var expectedItem = new BookEntity();
+
+            _mockBookRepository
+                .Setup(x => x.Create(It.IsAny<BookEntity>()))
+                .Callback((BookEntity entity )=>
+                {
+                    expectedItem = entity;
+                });
+
+            // Act
+            _bookService.Create(book);
+
+            // Assert
+            expectedItem
+                .Should().BeEquivalentTo(item);
+            _mockBookRepository
+                .Verify(x => x.Create(It.IsAny<BookEntity>()), Times.Once);
+            Assert.NotNull(expectedItem);
         }
     }
 }
