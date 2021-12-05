@@ -9,6 +9,10 @@ namespace Astoneti.Microservice.BookLibrary.Data.Contracts
 
         public BookEntity Get(int id);
 
-        public void Create(BookEntity book);
+        public BookEntity Create(BookEntity entity);
+
+        public BookEntity Update(BookEntity entity);
+
+        public BookEntity Delete(int id);
     }
 }

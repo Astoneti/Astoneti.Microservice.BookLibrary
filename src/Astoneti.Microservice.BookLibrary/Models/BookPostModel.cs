@@ -1,10 +1,8 @@
 ﻿namespace Astoneti.Microservice.BookLibrary.Models
 {
-    public class BookModel
+    public class BookPostModel
     {
-        public int Id { get; set; }
-
-        public string Title { get; set; }    
+        public string Title { get; set; }
 
         public string Author { get; set; }
     }

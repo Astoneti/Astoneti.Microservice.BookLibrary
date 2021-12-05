@@ -1,6 +1,7 @@
 using Astoneti.Microservice.BookLibrary.Business.Contracts;
 using Astoneti.Microservice.BookLibrary.Business.Dto;
 using Astoneti.Microservice.BookLibrary.Controllers;
+using Astoneti.Microservice.BookLibrary.Data.Entities;
 using Astoneti.Microservice.BookLibrary.Models;
 using AutoMapper;
 using FluentAssertions;
@@ -20,7 +21,7 @@ namespace Astoneti.Microservice.BookLibrary.Tests
 
         public BookControllerTests()
         {
-            _mockBookService = new Mock<IBookService>(MockBehavior.Strict);
+            _mockBookService = new Mock<IBookService>();
 
             _mapper = new MapperConfiguration(
                     cfg => cfg.AddMaps(
@@ -91,6 +92,7 @@ namespace Astoneti.Microservice.BookLibrary.Tests
             // Assert
             var okObjectResult = Assert.IsAssignableFrom<OkObjectResult>(result);
             var resultValue = Assert.IsAssignableFrom<BookModel>(okObjectResult.Value);
+            Assert.IsType<OkObjectResult>(result as OkObjectResult);
 
             resultValue
                 .Should()
@@ -116,33 +118,125 @@ namespace Astoneti.Microservice.BookLibrary.Tests
         }
 
         [Fact]
-        public void Create_Sould_CreateNewItemAndAddInToDb()
+        public void Post_ValidObjectPassed_ReturnedResponseHasCreatedItem()
         {
             // Arrange
-            var dto = new BookDto()
+            var testTitle = "Test Tiitle";
+            var testBook = new BookPostModel
+            {
+                Title = testTitle
+            };
+            var item = new BookEntity
+            {
+                Title = testTitle,
+                Id = 999
+            };
+
+            var itemDto =
+                _mapper.Map<BookDto>(testBook);
+
+            _mockBookService
+                .Setup(x => x.Add(It.IsAny<BookDto>()))
+                .Returns(item);
+
+            // Act
+            var result = _controller.Post(testBook);
+
+            // Assert
+            var createdResponse = result as CreatedAtActionResult;
+            var resultValue = createdResponse.Value as BookEntity;
+
+            resultValue.Should().BeEquivalentTo(item);
+
+            Assert.IsType<CreatedAtActionResult>(createdResponse);
+            Assert.IsType<BookEntity>(item);
+            Assert.Equal("Test Tiitle", item.Title);
+        }
+
+        [Fact]
+        public void Delete_WhenItemIsNotExists_Should_ReturnNotFound()
+        {
+            // Arrange
+            const int id = 1;
+
+            _mockBookService
+                .Setup(_ => _.Get(id))
+                .Returns(() => null);
+
+            // Act
+            var result = _controller.Delete(id);
+
+            // Assert
+            Assert.IsAssignableFrom<NotFoundResult>(result);
+            Assert.NotNull(result);
+        }
+
+        [Fact]
+        public void Delete_Should_RemovesOneItem()
+        {
+            // Arrange
+            const int id = 1;
+
+            var testItem = new BookDto()
+            {
+                Id = id,
+                Author = "John",
+                Title = "Test Tiitle"
+            };
+
+            _mapper.Map<BookModel>(testItem);
+
+            _mockBookService
+                .Setup(x => x.Get(id))
+                .Returns(testItem);
+
+            // Act
+            var result = _controller.Delete(testItem.Id);
+            
+
+            Assert.Equal(1, testItem.Id);
+            Assert.Equal("Test Tiitle", testItem.Title);
+            Assert.Equal("John", testItem.Author);
+            Assert.IsAssignableFrom<IActionResult>(result);
+        }
+
+        [Fact]
+        public void Put_Should_UpdateCreatedItem()
+        {
+
+            // Arrange
+            var item = new BookEntity()
             {
                 Id = 1,
                 Author = "John",
                 Title = "Test Tiitle"
             };
 
-            var expectedResultValue = 
-                _mapper.Map<BookModel>(dto);
+            var testTitle = "Test Tiitle";
+            var testBook = new BookModel
+            {
+                Title = testTitle
+            };
+
+            var itemDto =
+                _mapper.Map<BookDto>(testBook);
 
             _mockBookService
-                .Setup(x => x.Create(dto));
-                
+                .Setup(x => x.Update(It.IsAny<BookDto>()))
+                .Returns(item);
+
             // Act
-            var result = _controller.Create(dto);
+            var result = _controller.Put(testBook);
 
             // Assert
-            var okObjectResult = Assert.IsAssignableFrom<OkObjectResult>(result);
-            var resultValue = Assert.IsAssignableFrom<BookModel>(okObjectResult.Value);
-            Assert.NotNull(result);
+            var createdResponse = result as OkObjectResult;
+            var resultValue = createdResponse.Value as BookEntity;
 
-            resultValue
-                .Should()
-                .BeEquivalentTo(expectedResultValue);
+            resultValue.Should().BeEquivalentTo(item);
+
+            Assert.IsType<OkObjectResult>(createdResponse);
+            Assert.IsType<BookEntity>(item);
+            Assert.Equal("Test Tiitle", item.Title);
         }
     }
 }

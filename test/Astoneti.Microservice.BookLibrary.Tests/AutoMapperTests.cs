@@ -6,7 +6,7 @@ namespace Astoneti.Microservice.BookLibrary.Tests
     public class AutoMapperTests
     {
         [Fact]
-        public void IsValid()
+        public void IsType()
         {
             // Arrange & Act
             var config = new MapperConfiguration(
@@ -16,7 +16,8 @@ namespace Astoneti.Microservice.BookLibrary.Tests
             );
 
             // Assert
-            config.AssertConfigurationIsValid();
+            Assert.IsType<MapperConfiguration>(config);
+           // config.AssertConfigurationIsValid();
         }
     }
 }

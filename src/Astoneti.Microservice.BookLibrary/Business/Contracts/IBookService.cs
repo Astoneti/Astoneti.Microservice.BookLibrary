@@ -1,4 +1,5 @@
 ﻿using Astoneti.Microservice.BookLibrary.Business.Dto;
+using Astoneti.Microservice.BookLibrary.Data.Entities;
 using System.Collections.Generic;
 
 namespace Astoneti.Microservice.BookLibrary.Business.Contracts
@@ -9,6 +10,10 @@ namespace Astoneti.Microservice.BookLibrary.Business.Contracts
 
         BookDto Get(int id);
 
-        void Create(BookDto book);
+        BookEntity Add(BookDto dto);
+
+        BookEntity Update(BookDto dto);    
+
+        BookEntity Remove(BookDto dto);
     }
 }

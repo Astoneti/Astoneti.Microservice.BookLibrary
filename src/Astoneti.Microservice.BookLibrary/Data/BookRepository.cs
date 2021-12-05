@@ -25,10 +25,26 @@ namespace Astoneti.Microservice.BookLibrary.Data
             return DbContext.Set<BookEntity>().FirstOrDefault(_ => _.Id == id);
         }
 
-        public void Create(BookEntity book)
+        public BookEntity Create(BookEntity entity)
         {
-            DbContext.Set<BookEntity>().Add(book);
+            DbContext.Set<BookEntity>().Add(entity);
             DbContext.SaveChanges();
+            return entity;
+        }
+
+        public BookEntity Update(BookEntity entity)
+        {
+            DbContext.Set<BookEntity>().Update(entity);
+            DbContext.SaveChanges();
+            return entity;
+        }
+
+        public BookEntity Delete(int id)
+        {
+            var entity = DbContext.Set<BookEntity>().Find(id);
+            DbContext.Set<BookEntity>().Remove(entity);
+            DbContext.SaveChanges();
+            return entity;
         }
     }
 }

@@ -61,7 +61,7 @@ namespace Astoneti.Microservice.BookLibrary.Tests
         }
 
         [Fact]
-        public void Get_Sould_ReturnItemById()
+        public void Get_Should_ReturnItemById()
         {
             // Arrange
             const int id = 1;
@@ -92,13 +92,14 @@ namespace Astoneti.Microservice.BookLibrary.Tests
         }
 
         [Fact]
-        public void Create_Sould_CreateNewItemAndAddInDb()
+        public void Post_Should_CreateNewItemAndAddInDb()
         {
             // Arrange
             var book = new BookDto
             {
                 Id = 111
             };
+
             var item = _mapper.Map<BookEntity>(book);
 
             var expectedItem = new BookEntity();
@@ -111,7 +112,7 @@ namespace Astoneti.Microservice.BookLibrary.Tests
                 });
 
             // Act
-            _bookService.Create(book);
+            _bookService.Add(book);
 
             // Assert
             expectedItem
@@ -120,5 +121,68 @@ namespace Astoneti.Microservice.BookLibrary.Tests
                 .Verify(x => x.Create(It.IsAny<BookEntity>()), Times.Once);
             Assert.NotNull(expectedItem);
         }
+
+        [Fact]
+        public void  Delete_Should_FindItemByIdAndRemoveFromDb()
+        {
+            const int id = 1;
+            // Arrange
+            var book = new BookDto
+            {
+                Id = id,
+                Author = "John",
+                Title = "Test Tiitle"
+            };
+            var testItem = _mapper.Map<BookEntity>(book);
+
+
+
+            _mockBookRepository
+                .Setup(x => x.Get(id))
+                .Returns(testItem);
+               
+
+            // Act
+            var result = _bookService.Remove(book);
+
+            //Assert
+            testItem
+                .Should().BeEquivalentTo(result);
+            Assert.Equal(1, testItem.Id);
+            Assert.Equal(1, result.Id);
+           // Assert.IsAssignableFrom<BookDto>(result);    
+        }
+
+        [Fact]
+        public void Put_Should_UpdateAndReturnsUpdatedItem()
+        {
+            const int id = 1;
+            // Arrange
+            var book = new BookDto
+            {
+                Id = id,
+                Author = "John",
+                Title = "Test Tiitle"
+            };
+            var item = _mapper.Map<BookEntity>(book);
+
+            var expectedItem = new BookEntity();
+
+            _mockBookRepository
+                .Setup(x => x.Update(It.IsAny<BookEntity>()))
+                .Callback((BookEntity entity) =>
+                {
+                    expectedItem = entity;
+                });
+            // Act
+            _bookService.Update(book);
+            //Assert
+           expectedItem
+                .Should().BeEquivalentTo(item);
+            Assert.Equal(1, expectedItem.Id);
+           // Assert.IsAssignableFrom<BookDto>(expectedItem);
+            
+        }
     }
 }
+

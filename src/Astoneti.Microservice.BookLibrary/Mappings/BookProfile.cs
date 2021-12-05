@@ -11,6 +11,8 @@ namespace Astoneti.Microservice.BookLibrary.Mappings
         {
             CreateMap<BookModel, BookDto>().ReverseMap();
             CreateMap<BookEntity, BookDto>().ReverseMap();
+            CreateMap<BookPostModel, BookDto>().ReverseMap();
+            CreateMap<BookDto, BookEntity>().ReverseMap();
         }
     }
 }

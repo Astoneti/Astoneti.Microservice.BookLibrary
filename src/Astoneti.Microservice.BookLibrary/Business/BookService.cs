@@ -40,12 +40,32 @@ namespace Astoneti.Microservice.BookLibrary.Business
           );
         }
 
-        public void Create(BookDto book)
+        public BookEntity Add(BookDto book)
         {
             var item = _mapper.Map<BookEntity>(
                 book
                );
-            _bookRepository.Create(item);
+           var newItem =  _bookRepository.Create(item);
+           return newItem;
+        }
+
+        public BookEntity Update(BookDto dto)
+        {
+            var itemDto = _mapper.Map<BookEntity>(
+                dto
+                );
+            _bookRepository.Update(itemDto);
+            return itemDto;
+        }
+
+        public BookEntity Remove(BookDto book) 
+        {
+            var item = _mapper.Map<BookEntity>(
+                book
+                );
+
+            _bookRepository.Delete(item.Id);
+            return item;
         }
     }
 }

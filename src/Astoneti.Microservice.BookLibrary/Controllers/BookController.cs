@@ -55,15 +55,49 @@ namespace Astoneti.Microservice.BookLibrary.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(BookModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult Create(BookDto book)
+        public IActionResult Post(BookPostModel book)
         {
-            _bookService.Create(book);
-
-            return Ok(
-                _mapper.Map<BookModel>(
-                    book
-                )
+            var itemDto = _mapper.Map<BookDto>(
+                   book
+               );
+            var item = _bookService.Add(itemDto);
+            return CreatedAtAction(
+                "Get",
+                new { id = item.Id },
+                item
             );
+        }
+
+        [HttpPut]
+        [ProducesResponseType(typeof(BookModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public IActionResult Put(BookModel book)
+        {
+            var itemDto = _mapper.Map<BookDto>(
+                book
+                );
+            var item = _bookService.Update(itemDto);
+            return Ok(
+                item
+                );
+        }
+
+        [HttpDelete("{id}")]
+        [ProducesResponseType(typeof(BookModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public IActionResult Delete(int id)
+        {
+            var itemDto = _bookService.Get(id);
+            if (itemDto == null)
+            {
+                return NotFound();
+            }
+            _bookService.Remove(itemDto);
+            return Ok(
+               _mapper.Map<BookModel>(
+                   itemDto
+               )
+           );
         }
     }
 }
